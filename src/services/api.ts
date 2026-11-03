@@ -3,7 +3,7 @@ import axios, { AxiosError } from "axios";
 import type { ApiResponse } from "../types/api";
 import { ApiError } from "./api-error";
 
-export const TOKEN_KEY = "@listadetarefas.token";
+export const TOKEN_KEY = "@listadetarefas:token";
 
 export const http = axios.create({
   baseURL: env.apiUrl,
