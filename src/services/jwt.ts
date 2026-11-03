@@ -25,3 +25,4 @@ export function isTokenExpired(token: string): boolean {
   } catch {
     return true;
   }
+}
