@@ -29,13 +29,7 @@ export interface RegisterRequest {
   password: string;
 }
 
-export interface AuthSession {
+export interface AuthSession<T> {
   token: string;
-  user: UserResponse;
-}
-
-export interface UserResponse {
-  id: string;
-  name: string;
-  email: string;
+  data: T;
 }

@@ -1,15 +1,15 @@
-import type { UserResponse } from "../types/api";
 import { jwtDecode } from "jwt-decode";
+import type { User } from "../models/User";
 
 interface JwtPayload {
   sub: string;
-  userId: string;
+  userId: number;
   name: string;
   iat: number;
   exp: number;
 }
 
-export function decodeUserFromToken(token: string): UserResponse | null {
+export function decodeUserFromToken(token: string): User | null {
   try {
     const payload = jwtDecode<JwtPayload>(token);
     return { id: payload.userId, name: payload.name, email: payload.sub };
