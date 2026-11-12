@@ -8,6 +8,7 @@ import { Button } from "../ui/Button";
 import { Link } from "react-router-dom";
 import { Alert } from "../ui/Alert";
 import { Input } from "../ui/Input";
+import { GoogleButton } from "../ui/GoogleButton";
 
 export function LoginForm() {
   const { login } = useAuth();

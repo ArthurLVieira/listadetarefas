@@ -1,9 +1,9 @@
 import axios from "axios";
 import { env } from "../../config/env";
 import type { RawUser } from "../../models/User";
-import { Storage } from "../../utils.storage";
 import { jwtDecode } from "jwt-decode";
-import type { AuthResponse, RefreshToken } from "../../types/api";
+import type { AuthResponse } from "../../types/api";
+import { Storage } from "@/utils/storage";
 
 export const TOKEN_KEY = "@listadetarefas:token";
 export const REFRESH_TOKEN_KEY = "@listadetarefas:refreshToken";

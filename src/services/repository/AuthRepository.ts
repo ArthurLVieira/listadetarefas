@@ -9,7 +9,7 @@ import { env } from "../../config/env";
 
 export class AuthRepository extends BaseRepository {
   constructor(http: AxiosInstance) {
-    super(http, "/auth");
+    super(http, "/api/auth");
   }
 
   public async login(payload: LoginRequest): Promise<AuthResponse> {
