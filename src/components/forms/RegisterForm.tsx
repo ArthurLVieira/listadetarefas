@@ -66,7 +66,7 @@ export function RegisterForm() {
         {...register("password")}
       />
 
-      <Button type="submit" loading={isSubmitting} fullwidth className="mt-2">
+      <Button type="submit" loading={isSubmitting} fullWidth className="mt-2">
         Criar conta
       </Button>
 

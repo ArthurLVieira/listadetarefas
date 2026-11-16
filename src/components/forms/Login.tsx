@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { Alert } from "../ui/Alert";
 import { Input } from "../ui/Input";
 import { GoogleButton } from "../ui/GoogleButton";
+import { Lock, Mail } from "lucide-react";
 
 export function LoginForm() {
   const { login } = useAuth();
@@ -29,9 +30,7 @@ export function LoginForm() {
       await login({ email, password }, remember);
     } catch (err) {
       setFormError(
-        err instanceof ApiError
-          ? err.firstErrorMessage()
-          : "Não foi possível entrar.",
+        err instanceof ApiError ? err.firstErrorMessage() : "Não foi possível entrar."
       );
     }
   };
@@ -43,8 +42,12 @@ export function LoginForm() {
       <Input
         label="E-mail"
         type="email"
-        placeholder="voce@exemplo.com"
+        inputMode="email"
         autoComplete="email"
+        autoCapitalize="none"
+        spellCheck={false}
+        placeholder="voce@exemplo.com"
+        iconLeft={<Mail className="h-4 w-4" />}
         error={errors.email?.message}
         {...register("email")}
       />
@@ -52,33 +55,36 @@ export function LoginForm() {
       <Input
         label="Senha"
         type="password"
-        placeholder="Sua senha"
         autoComplete="current-password"
+        placeholder="Sua senha"
+        iconLeft={<Lock className="h-4 w-4" />}
         error={errors.password?.message}
         {...register("password")}
       />
 
-      <label className="flex items-center gap-2 text-sm text-neutral-600 select-none pt-1">
+      <label className="flex items-center gap-2.5 min-h-[44px] py-1 cursor-pointer text-sm text-neutral-600 select-none">
         <input
           type="checkbox"
           className="h-4 w-4 rounded border-neutral-300 text-primary-600 focus:ring-primary-400"
           {...register("remember")}
         />
-        Lembrar de mim
+        Lembrar de mim neste dispositivo
       </label>
 
-      <Button type="submit" loading={isSubmitting} fullwidth className="mt-2">
+      <Button type="submit" loading={isSubmitting} fullWidth size="lg">
         Entrar
       </Button>
 
       <Divider />
+
       <GoogleButton />
 
-      <p className="text-sm text-center text-neutral-500 pt-2">
+      <p className="text-sm text-center text-neutral-500 pt-1">
         Ainda não tem conta?{" "}
         <Link
           to="/register"
-          className="font-medium text-primary-600 hover:text-primary-700"
+          className="font-medium text-primary-600 hover:text-primary-700
+                     underline-offset-4 hover:underline"
         >
           Cadastre-se
         </Link>

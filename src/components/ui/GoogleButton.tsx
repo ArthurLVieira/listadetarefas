@@ -30,7 +30,7 @@ export function GoogleButton({ remember = true }: { remember?: boolean }) {
     <Button
       type="button"
       variant="google"
-      fullwidth
+      fullWidth
       onClick={() => loginWithGoogle(remember)}
     >
       <GoogleIcon />

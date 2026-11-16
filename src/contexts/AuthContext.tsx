@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = useCallback(
     async (data: RegisterRequest, remember = true) => {
-      const response = await authRepository.login(data);
+      const response = await authRepository.register(data);
       persistSession(response, remember);
     },
     [persistSession],

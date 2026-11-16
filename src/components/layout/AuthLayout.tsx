@@ -3,14 +3,13 @@ import type { ReactNode } from "react";
 
 interface Props {
   title: string;
-  subtitle: string;
+  subtitle: string; 
   children: ReactNode;
 }
 
 export function AuthLayout({ title, subtitle, children }: Props) {
   return (
-    <div className="relative min-h-[100dvh] flex bg-gradient-to-br from-primary-700 via-secondary-700 to-primary-900 overflow-hidden">
-      {/* Blobs decorativos — controlados para não cortarem */}
+  <div className="relative min-h-[100dvh] flex bg-gradient-to-br from-primary-700 via-secondary-700 to-primary-900 overflow-hidden">
       <div
         aria-hidden
         className="pointer-events-none absolute -top-32 -right-32 h-80 w-80 rounded-full bg-accent-400/20 blur-3xl"
@@ -46,7 +45,7 @@ export function AuthLayout({ title, subtitle, children }: Props) {
         </div>
 
         <p className="text-sm text-white/50">
-          © {new Date().getFullYear()} TaskFlow
+          Copyright &copy; {new Date().getFullYear()} TaskFlow
         </p>
       </aside>
 
@@ -72,16 +71,12 @@ export function AuthLayout({ title, subtitle, children }: Props) {
           </div>
 
           {/* Card principal — glass no mobile, branco sólido no desktop */}
-          <div
-            className="rounded-3xl bg-white/[0.97] backdrop-blur-xl
+          <div className="rounded-3xl bg-white/[0.97] backdrop-blur-xl
                           ring-1 ring-white/20
                           shadow-[0_20px_60px_-20px_rgba(0,0,0,0.35)]
-                          p-5 sm:p-7 md:p-8"
-          >
+                          p-5 sm:p-7 md:p-8">
             <div className="hidden lg:block mb-6">
-              <h1 className="text-2xl font-semibold text-neutral-900">
-                {title}
-              </h1>
+              <h1 className="text-2xl font-semibold text-neutral-900">{title}</h1>
               <p className="mt-1.5 text-neutral-500 text-sm">{subtitle}</p>
             </div>
             {children}
