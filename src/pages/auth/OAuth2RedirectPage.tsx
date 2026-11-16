@@ -6,7 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 export function OAuth2RedirectPage() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const { completeOAth2Login } = useAuth();
+  const { completeOAuth2Login } = useAuth();
   const [error, setError] = useState(false);
   const handle = useRef(false);
 
@@ -24,7 +24,7 @@ export function OAuth2RedirectPage() {
       return;
     }
 
-    const ok = completeOAth2Login({
+    const ok = completeOAuth2Login({
       accessToken,
       refreshToken,
       tokenType,
@@ -33,7 +33,7 @@ export function OAuth2RedirectPage() {
 
     if (ok) navigate("/", { replace: true });
     else setError(true);
-  }, [params, completeOAth2Login, navigate]);
+  }, [params, completeOAuth2Login, navigate]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-5 px-6 bg-gradient-to-br from-primary-700 via-secondary-700 to-primary-900 text-white">

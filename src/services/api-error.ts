@@ -1,17 +1,25 @@
 import type { ApiErrorResponse } from "../types/api";
 
+type apiErrorCode = 
+  | "API_OFFLINE"
+  | "NETWORK_ERROR"
+  | "TIMEOUT"
+  | "INVALID_CREDENTIALS"
+  | string;
+
+
 export interface RawApiError {
   status?: number;
   message: string;
   errors?: ApiErrorResponse[];
-  code?: number;
+  code?: apiErrorCode;
 }
 
 export class ApiError extends Error {
   readonly status?: number;
   readonly message: string;
   readonly errors?: ApiErrorResponse[];
-  readonly code?: number;
+  readonly code?: apiErrorCode;
 
   constructor(raw: RawApiError) {
     super(raw.message);
@@ -30,7 +38,7 @@ export class ApiError extends Error {
     return this.errors;
   }
 
-  get getCode(): number | undefined {
+  get getCode(): string | undefined {
     return this.code;
   }
 
@@ -39,5 +47,9 @@ export class ApiError extends Error {
       return this.errors[0].message;
     }
     return null;
+  }
+
+  isOffline(): boolean {
+    return this.code === "API_OFFLINE" || this.code === "NETWORK_ERROR";
   }
 }
