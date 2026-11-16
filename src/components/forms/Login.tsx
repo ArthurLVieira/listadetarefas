@@ -30,7 +30,9 @@ export function LoginForm() {
       await login({ email, password }, remember);
     } catch (err) {
       setFormError(
-        err instanceof ApiError ? err.firstErrorMessage() : "Não foi possível entrar."
+        err instanceof ApiError
+          ? err.firstErrorMessage()
+          : "Não foi possível entrar.",
       );
     }
   };

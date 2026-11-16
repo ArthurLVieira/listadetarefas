@@ -6,12 +6,12 @@ import { Button } from "../ui/Button";
 
 export function OAuth2RedirectPage() {
   const [params] = useSearchParams();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const { completeOAuth2Login } = useAuth();
   const [error, setError] = useState(false);
   const handled = useRef(false);
 
-    useEffect(() => {
+  useEffect(() => {
     if (handled.current) return;
     handled.current = true;
 
@@ -36,13 +36,16 @@ export function OAuth2RedirectPage() {
   }, [params, completeOAuth2Login, navigate]);
 
   return (
-    <div className="min-h-[100dvh] flex flex-col items-center justify-center gap-6
+    <div
+      className="min-h-[100dvh] flex flex-col items-center justify-center gap-6
                     px-6 py-[max(1rem,var(--safe-top))] pb-[max(1rem,var(--safe-bottom))]
                     bg-gradient-to-br from-primary-700 via-secondary-700 to-primary-900 text-white
-                    overflow-hidden">
-
-      <div className="grid place-items-center h-16 w-16 rounded-3xl
-                      bg-white/10 backdrop-blur ring-1 ring-white/20 animate-fade-in">
+                    overflow-hidden"
+    >
+      <div
+        className="grid place-items-center h-16 w-16 rounded-3xl
+                      bg-white/10 backdrop-blur ring-1 ring-white/20 animate-fade-in"
+      >
         <Sparkles className="h-8 w-8 text-accent-400" />
       </div>
 
@@ -50,12 +53,17 @@ export function OAuth2RedirectPage() {
         <div className="flex flex-col items-center gap-5 max-w-sm text-center animate-slide-up">
           <XCircle className="h-10 w-10 text-red-300" />
           <div>
-            <p className="font-semibold text-lg">Não foi possível concluir o login</p>
+            <p className="font-semibold text-lg">
+              Não foi possível concluir o login
+            </p>
             <p className="text-sm text-white/70 mt-1">
               Algo deu errado durante a autenticação com o Google.
             </p>
           </div>
-          <Button variant="outline" onClick={() => navigate("/login", { replace: true })}>
+          <Button
+            variant="outline"
+            onClick={() => navigate("/login", { replace: true })}
+          >
             Voltar para o login
           </Button>
         </div>
