@@ -2,32 +2,50 @@ import { forwardRef, type ButtonHTMLAttributes } from "react";
 import clsx from "clsx";
 import { Loader2 } from "lucide-react";
 
-type Variant = "primary" | "outline" | "ghost" | "google";
+type Variant = "primary" | "secondary" | "outline" | "ghost" | "google";
+type Size = "sm" | "md" | "lg";
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
+  size?: Size;
   loading?: boolean;
-  fullwidth?: boolean;
+  fullWidth?: boolean;
+  iconLeft?: React.ReactNode;
+  iconRight?: React.ReactNode;
 }
 
-const base = clsx(
-  "inline-flex items-center justify-center gap-2 h-12 px-5 text-[15px] font-medium rounded-2xl",
-  "transition-all duration-150 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none",
-  "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
-);
+const base =
+  "inline-flex items-center justify-center gap-2 font-medium select-none " +
+  "rounded-2xl transition-all duration-150 " +
+  "active:scale-[0.98] active:brightness-95 " +
+  "disabled:pointer-events-none disabled:shadow-none " +
+  "disabled:bg-neutral-100 disabled:text-neutral-400 disabled:from-transparent disabled:to-transparent " +
+  "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 " +
+  "whitespace-nowrap";
+
+const sizes: Record<Size, string> = {
+  sm: "min-h-[40px] px-3.5 text-sm",
+  md: "min-h-[44px] px-4 text-[15px]",
+  lg: "min-h-[52px] px-6 text-base",
+};
 
 const variants: Record<Variant, string> = {
-  primary: clsx(
-    "bg-gradient-to-r from-accent-500 to-accent-600 text-white shadow-lg shadow-accent-500/25",
+  primary:
+    "bg-gradient-to-r from-accent-500 to-accent-600 text-white " +
+    "shadow-lg shadow-accent-500/25 " +
     "hover:from-accent-600 hover:to-accent-700 focus-visible:ring-accent-400",
-  ),
-  outline:
-    "border border-neutral-200 bg-white text-neutral-800 hover:bg-neutral-50 focus-visible:ring-primary-400",
-  ghost: "text-neutral-600 hover:bg-neutral-100 focus-visible:ring-neutral-300",
-  google: clsx(
-    "border border-neutral-200 bg-white text-neutral-800 hover:bg-neutral-50 active:bg-neutral-100",
+  secondary:
+    "bg-gradient-to-r from-primary-500 to-primary-600 text-white " +
+    "shadow-lg shadow-primary-500/25 hover:from-primary-600 hover:to-primary-700 " +
     "focus-visible:ring-primary-400",
-  ),
+  outline:
+    "border border-neutral-200 bg-white text-neutral-800 " +
+    "hover:bg-neutral-50 active:bg-neutral-100 focus-visible:ring-primary-400",
+  ghost:
+    "text-neutral-600 hover:bg-neutral-100 active:bg-neutral-200 focus-visible:ring-neutral-300",
+  google:
+    "border border-neutral-200 bg-white text-neutral-800 " +
+    "hover:bg-neutral-50 active:bg-neutral-100 focus-visible:ring-primary-400",
 };
 
 export const Button = forwardRef<HTMLButtonElement, Props>(
@@ -35,8 +53,11 @@ export const Button = forwardRef<HTMLButtonElement, Props>(
     {
       className,
       variant = "primary",
+      size = "md",
       loading,
-      fullwidth,
+      fullWidth,
+      iconLeft,
+      iconRight,
       disabled,
       children,
       ...rest
@@ -48,14 +69,16 @@ export const Button = forwardRef<HTMLButtonElement, Props>(
       disabled={disabled || loading}
       className={clsx(
         base,
+        sizes[size],
         variants[variant],
-        fullwidth && "w-full",
+        fullWidth && "w-full",
         className,
       )}
       {...rest}
     >
-      {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : iconLeft}
       {children}
+      {!loading && iconRight}
     </button>
   ),
 );

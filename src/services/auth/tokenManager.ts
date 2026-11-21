@@ -159,6 +159,20 @@ class tokenManager {
     }
   }
 
+  private static readonly DEFAULT_EXPIRY_THRESHOLD_MS = 120_000;
+
+  isExpiringSoon(
+    threshold: number = tokenManager.DEFAULT_EXPIRY_THRESHOLD_MS,
+  ): boolean {
+    if (!this.state?.expiresAt) return false;
+
+    if (!this.state.accessToken) return false;
+
+    const remaining = this.state.expiresAt - Date.now();
+
+    return remaining <= threshold;
+  }
+
   on(listener: (event: TokenEvent) => void): () => void {
     this.listeners.add(listener);
     return () => {

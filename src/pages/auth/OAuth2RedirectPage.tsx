@@ -1,18 +1,20 @@
+import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, Sparkles } from "lucide-react";
+import clsx from "clsx";
+import { Loader2, Sparkles, XCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 export function OAuth2RedirectPage() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const { completeOAth2Login } = useAuth();
+  const { completeOAuth2Login } = useAuth();
   const [error, setError] = useState(false);
-  const handle = useRef(false);
+  const handled = useRef(false);
 
   useEffect(() => {
-    if (handle.current) return;
-    handle.current = true;
+    if (handled.current) return;
+    handled.current = true;
 
     const accessToken = params.get("accessToken");
     const refreshToken = params.get("refreshToken");
@@ -24,40 +26,57 @@ export function OAuth2RedirectPage() {
       return;
     }
 
-    const ok = completeOAth2Login({
+    const ok = completeOAuth2Login({
       accessToken,
       refreshToken,
       tokenType,
       expiresIn: Number(expiresInRaw),
     });
-
     if (ok) navigate("/", { replace: true });
     else setError(true);
-  }, [params, completeOAth2Login, navigate]);
+  }, [params, completeOAuth2Login, navigate]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-5 px-6 bg-gradient-to-br from-primary-700 via-secondary-700 to-primary-900 text-white">
-      <div className="h-14 w-14 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center">
-        <Sparkles className="h-7 w-7 text-accent-400" />
+    <div
+      className={clsx(
+        "min-h-[100dvh] flex flex-col items-center justify-center gap-6",
+        "px-6 py-[max(1rem,var(--safe-top))] pb-[max(1rem,var(--safe-bottom))]",
+        "bg-gradient-to-br from-primary-700 via-secondary-700 to-primary-900 text-white",
+        "overflow-hidden",
+      )}
+    >
+      <div
+        className={clsx(
+          "grid place-items-center h-16 w-16 rounded-3xl",
+          "bg-white/10 backdrop-blur ring-1 ring-white/20 animate-fade-in",
+        )}
+      >
+        <Sparkles className="h-8 w-8 text-accent-400" />
       </div>
 
       {error ? (
-        <>
-          <p className="font-medium text-center">
-            Não foi possível concluir o login.
-          </p>
-          <button
+        <div className="flex flex-col items-center gap-5 max-w-sm text-center animate-slide-up">
+          <XCircle className="h-10 w-10 text-red-300" />
+          <div>
+            <p className="font-semibold text-lg">
+              Não foi possível concluir o login
+            </p>
+            <p className="text-sm text-white/70 mt-1">
+              Algo deu errado durante a autenticação com o Google.
+            </p>
+          </div>
+          <Button
+            variant="outline"
             onClick={() => navigate("/login", { replace: true })}
-            className="text-sm text-accent-300 hover:text-accent-200 underline-offset-4 hover:underline"
           >
             Voltar para o login
-          </button>
-        </>
+          </Button>
+        </div>
       ) : (
-        <>
+        <div className="flex flex-col items-center gap-4 animate-fade-in">
           <Loader2 className="h-6 w-6 animate-spin text-accent-400" />
           <p className="text-sm text-white/75">Concluindo login…</p>
-        </>
+        </div>
       )}
     </div>
   );

@@ -39,3 +39,21 @@ export interface AuthSession<T> {
   token: string;
   data: T;
 }
+
+export interface CategoryRequest {
+  name: string;
+  description?: string;
+  color: string | null;
+}
+
+export interface TaskCreateRequest {
+  title: string;
+  description?: string | null;
+  dueDate?: string | null;
+  priorityId?: number | null;
+  categoryId?: number | null;
+}
+
+export interface TaskUpdateRequest extends TaskCreateRequest {}
+
+export type TaskFilter = "all" | "open" | "completed";

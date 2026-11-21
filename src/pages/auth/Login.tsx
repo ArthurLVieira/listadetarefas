@@ -1,4 +1,4 @@
-import { LoginForm } from "@/components/forms/Login";
+import { LoginForm } from "@/components/forms/auth/LoginForm";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";

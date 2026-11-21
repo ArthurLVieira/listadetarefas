@@ -10,6 +10,7 @@ import type { RawUser } from "../models/User";
 import type { AuthResponse, LoginRequest, RegisterRequest } from "../types/api";
 import { tokenManagerInstance } from "../services/auth/tokenManager";
 import { authRepository } from "../services/api";
+import { ApiError } from "@/services/api-error";
 
 const OAUTH2_REMEMBER_KEY = "oauth2:remember";
 
@@ -27,7 +28,7 @@ export interface AuthContextValue {
   login: (data: LoginRequest, remember?: boolean) => Promise<void>;
   register: (data: RegisterRequest, remember?: boolean) => Promise<void>;
   loginWithGoogle: (remember?: boolean) => void;
-  completeOAth2Login: (Params: OAuth2CallBackParams) => boolean;
+  completeOAuth2Login: (Params: OAuth2CallBackParams) => boolean;
   logout: () => Promise<void>;
 }
 
@@ -71,6 +72,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = useCallback(
     async (data: RegisterRequest, remember = true) => {
       const response = await authRepository.login(data);
+
+      if (!response) {
+        throw new ApiError({
+          status: 500,
+          message: "Resposta inválida do servidor ao registrar",
+        });
+      }
+
       persistSession(response, remember);
     },
     [persistSession],
@@ -81,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     authRepository.startGoogleLogin();
   }, []);
 
-  const completeOAth2Login = useCallback(
+  const completeOAuth2Login = useCallback(
     (params: OAuth2CallBackParams) => {
       const remember = sessionStorage.getItem(OAUTH2_REMEMBER_KEY) !== "false";
       sessionStorage.removeItem(OAUTH2_REMEMBER_KEY);
@@ -124,7 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login,
       register,
       loginWithGoogle,
-      completeOAth2Login,
+      completeOAuth2Login,
       logout,
     }),
     [
@@ -133,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login,
       register,
       loginWithGoogle,
-      completeOAth2Login,
+      completeOAuth2Login,
       logout,
     ],
   );

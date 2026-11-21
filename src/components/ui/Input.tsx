@@ -1,14 +1,20 @@
 import clsx from "clsx";
-import { forwardRef, type InputHTMLAttributes } from "react";
+import { forwardRef, useId, type InputHTMLAttributes } from "react";
 
-interface Props extends InputHTMLAttributes<HTMLInputElement> {
+interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
   label: string;
   error?: string;
+  hint?: string;
+  iconLeft?: React.ReactNode;
 }
 
 export const Input = forwardRef<HTMLInputElement, Props>(
-  ({ label, error, className, id, ...rest }, ref) => {
-    const inputId = id ?? rest.name;
+  ({ label, error, hint, iconLeft, className, id, ...rest }, ref) => {
+    const reactId = useId();
+    const inputId = id ?? reactId;
+    const errorId = `${inputId}-error`;
+    const hintId = `${inputId}-hint`;
+
     return (
       <div className="space-y-1.5">
         <label
@@ -17,20 +23,42 @@ export const Input = forwardRef<HTMLInputElement, Props>(
         >
           {label}
         </label>
-        <input
-          ref={ref}
-          id={inputId}
-          className={clsx(
-            "w-full, h-12 text-[15px] rounded-2xl border bg-white/90 backdrop-blur",
-            "placeholder:text-neutral-400 transition-all",
-            error
-              ? "border-red-300 focus:ring-red-100 focus:border-primary-400"
-              : "border-neutral-200 focus:ring-primary-100 focus:border-primary-400",
-            className,
+
+        <div className="relative">
+          {iconLeft && (
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400">
+              {iconLeft}
+            </span>
           )}
-          {...rest}
-        />
-        {error && <p className="text-xs text-red-600 pl-1">{error}</p>}
+          <input
+            ref={ref}
+            id={inputId}
+            aria-invalid={!!error}
+            aria-describedby={error ? errorId : hint ? hintId : undefined}
+            className={clsx(
+              // min-h 48px + text 16px = sem zoom no iOS, alvo confortável
+              "w-full min-h-[48px] px-4 text-base rounded-2xl border bg-white",
+              "placeholder:text-neutral-400 transition-all",
+              "focus:outline-none focus:ring-4",
+              iconLeft && "pl-11",
+              error
+                ? "border-red-300 focus:ring-red-100 focus:border-red-400"
+                : "border-neutral-200 focus:ring-primary-100 focus:border-primary-400",
+              className,
+            )}
+            {...rest}
+          />
+        </div>
+
+        {error ? (
+          <p id={errorId} className="text-xs text-red-600 pl-1">
+            {error}
+          </p>
+        ) : hint ? (
+          <p id={hintId} className="text-xs text-neutral-500 pl-1">
+            {hint}
+          </p>
+        ) : null}
       </div>
     );
   },

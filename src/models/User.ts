@@ -23,6 +23,10 @@ export class User extends Entity<RawUser> {
       .toUpperCase();
   }
 
+  get getId(): number {
+    return this.id;
+  }
+
   static fromRaw(raw: RawUser): User {
     return new User(raw);
   }

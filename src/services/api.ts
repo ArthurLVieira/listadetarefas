@@ -4,10 +4,13 @@ import axios, {
   type AxiosInstance,
   type InternalAxiosRequestConfig,
 } from "axios";
-import type { ApiResponse } from "../types/api";
 import { ApiError } from "./api-error";
 import { tokenManagerInstance } from "./auth/tokenManager";
 import { AuthRepository } from "./repository/AuthRepository";
+import { CategoryRepository } from "./repository/CategoryRepository";
+import { healthService } from "./health/HealthService";
+import { PriorityRepository } from "./repository/PriorityRepository";
+import { TaskRepository } from "./repository/TaskRepository";
 
 export const api = axios.create({
   baseURL: env.apiUrl,
@@ -20,28 +23,39 @@ export const api = axios.create({
 api.interceptors.request.use(async (config) => {
   const url = config.url ?? "";
 
-  const isPublicRoute =
+  const isPublic =
     url.startsWith("/auth/login") ||
-    url.startsWith("/register") ||
+    url.startsWith("/auth/register") ||
     url.startsWith("/auth/refresh");
 
-  if (isPublicRoute || !tokenManagerInstance.isAuthenticated()) {
-    return config;
+  if (healthService.isOffline() && !isPublic) {
+    throw new ApiError({
+      status: 0,
+      message: "Sem conexão com o servidor. Verificar sua internet",
+      errors: [],
+      code: "API_OFFLINE",
+    });
   }
 
-  if (tokenManagerInstance.isExpringSoon()) {
+  if (
+    !isPublic &&
+    tokenManagerInstance.isAuthenticated() &&
+    tokenManagerInstance.isExpiringSoon()
+  ) {
     try {
       const newToken = await tokenManagerInstance.refreshToken();
       config.headers.Authorization = `Bearer ${newToken}`;
       return config;
-    } catch {}
+    } catch {
+      /* deixa o response interceptor tratar */
+    }
   }
 
   const token = tokenManagerInstance.getAccessToken();
-
-  if (token) {
+  if (token && !isPublic) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   return config;
 });
 
@@ -50,22 +64,41 @@ interface RetryableConfig extends InternalAxiosRequestConfig {
 }
 
 api.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError<ApiResponse<unknown>>) => {
+  (response) => {
+    healthService.reportSuccess();
+    return response;
+  },
+  async (
+    error: AxiosError<{
+      message?: string;
+      errors?: { code: string; message: string }[];
+    }>,
+  ) => {
     const original = error.response?.config as RetryableConfig | undefined;
     const status = error.response?.status;
     const url = original?.url ?? "";
-
     const isAuthRoute =
       url.includes("/auth/login") ||
       url.includes("/auth/refresh") ||
-      url.includes("/register");
+      url.includes("/auth/register");
+
+    const isNetworkError = !error.response;
+    const isTimeout =
+      error.code === "ECONNABORTED" || error.code === "ETIMEDOUT";
+    const isServerDown = status !== undefined && status >= 500;
+
+    if (isNetworkError || isServerDown) {
+      healthService.reportFailure();
+
+      if (isNetworkError) {
+        void healthService.checkNow();
+      }
+    }
 
     if (status === 401 && original && !original._retry && !isAuthRoute) {
       original._retry = true;
-
       try {
-        const newToken = tokenManagerInstance.refreshToken();
+        const newToken = await tokenManagerInstance.refreshToken();
         original.headers = original.headers ?? {};
         original.headers.Authorization = `Bearer ${newToken}`;
         return api(original);
@@ -73,6 +106,19 @@ api.interceptors.response.use(
         tokenManagerInstance.clearSession();
         if (!location.pathname.startsWith("/login")) location.assign("/login");
       }
+    }
+
+    if (isNetworkError) {
+      return Promise.reject(
+        new ApiError({
+          status: 0,
+          message: isTimeout
+            ? "O servidor demorou para responder. Tente novamente."
+            : "Sem conexão com o servidor. Verifique sua internet.",
+          errors: [],
+          code: isTimeout ? "TIMEOUT" : "API_OFFLINE",
+        }),
+      );
     }
 
     return Promise.reject(
@@ -91,3 +137,6 @@ api.interceptors.response.use(
 
 export type ApiInstance = AxiosInstance;
 export const authRepository = new AuthRepository(api);
+export const categoryRepository = new CategoryRepository(api);
+export const priorityRepository = new PriorityRepository(api);
+export const taskRepository = new TaskRepository(api);

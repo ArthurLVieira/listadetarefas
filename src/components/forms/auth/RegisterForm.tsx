@@ -1,37 +1,37 @@
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
+import { GoogleButton } from "@/components/ui/GoogleButton";
+import { Input } from "@/components/ui/Input";
 import { useAuth } from "@/hooks/useAuth";
-import { loginSchema, type LoginFormData } from "@/schemas/auth.schema";
+import { registerSchema, type RegisterFormData } from "@/schemas/auth.schema";
+import { ApiError } from "@/services/api-error";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ApiError } from "@/services/api-error";
-import { Button } from "../ui/Button";
 import { Link } from "react-router-dom";
-import { Alert } from "../ui/Alert";
-import { Input } from "../ui/Input";
-import { GoogleButton } from "../ui/GoogleButton";
 
-export function LoginForm() {
-  const { login } = useAuth();
+export function RegisterForm() {
+  const { register: RegisterUser } = useAuth();
   const [formError, setFormError] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "", remember: true },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { name: "", email: "", password: "" },
   });
 
-  const onSubmit = async ({ email, password, remember }: LoginFormData) => {
+  const onSubmit = async ({ name, email, password }: RegisterFormData) => {
     setFormError(null);
     try {
-      await login({ email, password }, remember);
+      await RegisterUser({ name, email, password });
     } catch (err) {
       setFormError(
         err instanceof ApiError
           ? err.firstErrorMessage()
-          : "Não foi possível entrar.",
+          : "Não foi possivel criar a conta.",
       );
     }
   };
@@ -39,6 +39,14 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
       {formError && <Alert message={formError} />}
+
+      <Input
+        label="Nome"
+        placeholder="Como podemos te chamar?"
+        autoComplete="name"
+        error={errors.name?.message}
+        {...register("name")}
+      />
 
       <Input
         label="E-mail"
@@ -52,35 +60,26 @@ export function LoginForm() {
       <Input
         label="Senha"
         type="password"
-        placeholder="Sua senha"
-        autoComplete="current-password"
+        placeholder="Mínimo 8 caracteres"
+        autoComplete="new-password"
         error={errors.password?.message}
         {...register("password")}
       />
 
-      <label className="flex items-center gap-2 text-sm text-neutral-600 select-none pt-1">
-        <input
-          type="checkbox"
-          className="h-4 w-4 rounded border-neutral-300 text-primary-600 focus:ring-primary-400"
-          {...register("remember")}
-        />
-        Lembrar de mim
-      </label>
-
       <Button type="submit" loading={isSubmitting} fullwidth className="mt-2">
-        Entrar
+        Criar conta
       </Button>
 
       <Divider />
       <GoogleButton />
 
       <p className="text-sm text-center text-neutral-500 pt-2">
-        Ainda não tem conta?{" "}
+        Já possui conta?{" "}
         <Link
-          to="/register"
+          to="/login"
           className="font-medium text-primary-600 hover:text-primary-700"
         >
-          Cadastre-se
+          Entrar
         </Link>
       </p>
     </form>
