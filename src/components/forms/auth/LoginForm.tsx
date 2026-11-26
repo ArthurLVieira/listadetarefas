@@ -8,14 +8,10 @@ import { Alert } from "@/components/ui/Alert";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { GoogleButton } from "@/components/ui/GoogleButton";
-import { Lock, Mail } from "lucide-react";
-import { useApiStatus } from "@/hooks/useApiStatus";
 import { Link } from "react-router-dom";
-import { Lock, Mail } from "lucide-react";
 
 export function LoginForm() {
   const { login } = useAuth();
-  const { isOnline } = useApiStatus();
   const [formError, setFormError] = useState<string | null>(null);
 
   const {
@@ -47,65 +43,42 @@ export function LoginForm() {
       <Input
         label="E-mail"
         type="email"
-        inputMode="email"
-        autoComplete="email"
-        autoCapitalize="none"
-        spellCheck={false}
-        inputMode="email"
-        autoComplete="email"
-        autoCapitalize="none"
-        spellCheck={false}
         placeholder="voce@exemplo.com"
-        iconLeft={<Mail className="h-4 w-4" />}
-        iconLeft={<Mail className="h-4 w-4" />}
+        autoComplete="email"
         error={errors.email?.message}
         {...register("email")}
       />
+
       <Input
         label="Senha"
         type="password"
+        placeholder="Sua senha"
         autoComplete="current-password"
-        placeholder="Sua senha"
-        iconLeft={<Lock className="h-4 w-4" />}
-        placeholder="Sua senha"
-        iconLeft={<Lock className="h-4 w-4" />}
         error={errors.password?.message}
         {...register("password")}
       />
 
-      <label className="flex items-center gap-2.5 min-h-[44px] py-1 cursor-pointer text-sm text-neutral-600 select-none">
-      <label className="flex items-center gap-2.5 min-h-[44px] py-1 cursor-pointer text-sm text-neutral-600 select-none">
+      <label className="flex items-center gap-2 text-sm text-neutral-600 select-none pt-1">
         <input
           type="checkbox"
           className="h-4 w-4 rounded border-neutral-300 text-primary-600 focus:ring-primary-400"
           {...register("remember")}
         />
-        Lembrar de mim neste dispositivo neste dispositivo
+        Lembrar de mim
       </label>
 
-      <Button
-        type="submit"
-        loading={isSubmitting}
-        disabled={!isOnline}
-        fullWidth
-        size="lg"
-      >
-        {isOnline ? "Entrar" : "Aguardando conexão…"}
+      <Button type="submit" loading={isSubmitting} fullWidth className="mt-2">
+        Entrar
       </Button>
 
       <Divider />
-
-
       <GoogleButton />
 
-      <p className="text-sm text-center text-neutral-500 pt-1">
-      <p className="text-sm text-center text-neutral-500 pt-1">
+      <p className="text-sm text-center text-neutral-500 pt-2">
         Ainda não tem conta?{" "}
         <Link
           to="/register"
-          className="font-medium text-primary-600 hover:text-primary-700
-                     underline-offset-4 hover:underline
-                     underline-offset-4 hover:underline"
+          className="font-medium text-primary-600 hover:text-primary-700"
         >
           Cadastre-se
         </Link>

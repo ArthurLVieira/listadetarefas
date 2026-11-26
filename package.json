@@ -10,14 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@hookform/resolvers": "^7.0.5",
+    "@hookform/resolvers": "^7.0.9",
     "@tailwindcss/vite": "^4.3.5",
     "axios": "^1.21.1",
     "clsx": "^2.1.1",
     "jwt-decode": "^4.0.0",
-    "lucide-react": "^1.71.0",
+    "lucide-react": "^1.81.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
+    "react-hook-form": "^7.92.0",
     "react-router-dom": "^7.18.5",
     "tailwind-merge": "^3.7.0",
     "tailwindcss": "^4.3.5",

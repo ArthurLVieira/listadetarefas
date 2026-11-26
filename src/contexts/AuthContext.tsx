@@ -28,7 +28,7 @@ export interface AuthContextValue {
   login: (data: LoginRequest, remember?: boolean) => Promise<void>;
   register: (data: RegisterRequest, remember?: boolean) => Promise<void>;
   loginWithGoogle: (remember?: boolean) => void;
-  completeOAuuth2Login: (Params: OAuth2CallBackParams) => boolean;
+  completeOAuth2Login: (Params: OAuth2CallBackParams) => boolean;
   logout: () => Promise<void>;
 }
 
@@ -93,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     authRepository.startGoogleLogin();
   }, []);
 
-  const completeOAuuth2Login = useCallback(
+  const completeOAuth2Login = useCallback(
     (params: OAuth2CallBackParams) => {
       const remember = sessionStorage.getItem(OAUTH2_REMEMBER_KEY) !== "false";
       sessionStorage.removeItem(OAUTH2_REMEMBER_KEY);
@@ -136,7 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login,
       register,
       loginWithGoogle,
-      completeOAuuth2Login,
+      completeOAuth2Login,
       logout,
     }),
     [

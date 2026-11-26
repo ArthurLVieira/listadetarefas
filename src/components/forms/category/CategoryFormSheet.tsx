@@ -71,7 +71,7 @@ export function CategoryFormSheet({ open, initial, onClose, onSubmit }: Props) {
         <Button
           type="submit"
           form="category-form"
-          fullwidth
+          fullWidth
           loading={isSubmitting}
         >
           {isEditing ? "Salvar alterações" : "Criar categoria"}
