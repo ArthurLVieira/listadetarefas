@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { ListTodo, Tag } from "lucide-react";
+import { Home, ListTodo, Tag } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 interface Props {
@@ -7,7 +7,8 @@ interface Props {
 }
 
 const NAV = [
-  { to: "/", label: "Tarefas", icon: ListTodo, end: true },
+  { to: "/", label: "Início", icon: Home, end: true },
+  { to: "/tasks", label: "Tarefas", icon: ListTodo, end: false },
   { to: "/categories", label: "Categorias", icon: Tag, end: false },
 ] as const;
 
@@ -16,13 +17,13 @@ export function BottomNav({ className }: Props) {
     <nav
       className={clsx(
         "fixed bottom-0 inset-x-0 z-30",
-        "bg-white/95 backdrop-blur-md",
-        "border-t border-neutral-200",
+        "bg-white/95 backdrop-blur-md border-t border-neutral-200",
         "pb-[max(0.5rem,env(safe-area-inset-bottom))]",
         className,
       )}
+      aria-label="Navegação principal"
     >
-      <div className="grid grid-cols-2 max-w-md mx-auto p-2 gap-1">
+      <div className="grid grid-cols-3 max-w-md mx-auto px-2 py-2 gap-1">
         {NAV.map((item) => (
           <NavLink
             key={item.to}

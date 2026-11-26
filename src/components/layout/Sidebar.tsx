@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { ListTodo, Sparkles, Tag } from "lucide-react";
+import { Home, ListTodo, Sparkles, Tag } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 interface Props {
@@ -7,7 +7,8 @@ interface Props {
 }
 
 const NAV = [
-  { to: "/", label: "Tarefas", icon: ListTodo, end: true },
+  { to: "/", label: "Início", icon: Home, end: true },
+  { to: "/tasks", label: "Tarefas", icon: ListTodo, end: false },
   { to: "/categories", label: "Categorias", icon: Tag, end: false },
 ] as const;
 

@@ -1,4 +1,4 @@
-import type { AxiosInstance } from "axios";
+import type { AxiosInstance, AxiosRequestConfig } from "axios";
 import { BaseRepository } from "./BaseRepository";
 import { Task } from "@/models/Task";
 import type { TaskCreateRequest, TaskUpdateRequest } from "@/types/api";
@@ -8,9 +8,10 @@ export class TaskRepository extends BaseRepository {
     super(http, "/tasks");
   }
 
-  findAll(completed?: boolean): Promise<Task[]> {
-    const qs = completed === undefined ? "" : `completed=${completed}`;
-    return this.get<Task[]>(qs);
+  findAll(completed?: boolean | null): Promise<Task[]> {
+    const params: AxiosRequestConfig | undefined =
+      typeof completed === "boolean" ? { params: { completed } } : undefined;
+    return this.get<Task[]>("", params);
   }
 
   findById(id: number): Promise<Task> {

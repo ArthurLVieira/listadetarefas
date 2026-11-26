@@ -1,11 +1,12 @@
 import { LoginPage } from "@/pages/auth/Login";
 import { OAuth2RedirectPage } from "@/pages/auth/OAuth2RedirectPage";
 import { RegisterPage } from "@/pages/auth/Register";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { HomePage } from "@/pages/home/HomePage";
 import { CategoriesPage } from "@/pages/category/CategoriesPage";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { TasksPage } from "@/pages/task/TasksPage";
 
 export function AppRouter() {
   return (
@@ -19,6 +20,9 @@ export function AppRouter() {
           <Route element={<AppLayout />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/categories" element={<CategoriesPage />} />
+            <Route path="/tasks" element={<TasksPage />} />
+
+            <Route path="/home" element={<Navigate to="/" replace />} />
           </Route>
         </Route>
 

@@ -59,6 +59,20 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
+interface SpringErrorBody {
+  timestamp?: string;
+  status?: number;
+  error?: string;
+  message?: string;
+  path?: string;
+}
+
+interface ApiResponseBody {
+  success?: boolean;
+  message?: string | null;
+  errors?: { code: string; message: string }[] | null;
+}
+
 interface RetryableConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
@@ -68,12 +82,7 @@ api.interceptors.response.use(
     healthService.reportSuccess();
     return response;
   },
-  async (
-    error: AxiosError<{
-      message?: string;
-      errors?: { code: string; message: string }[];
-    }>,
-  ) => {
+  async (error: AxiosError<ApiResponseBody & SpringErrorBody>) => {
     const original = error.response?.config as RetryableConfig | undefined;
     const status = error.response?.status;
     const url = original?.url ?? "";
@@ -84,18 +93,30 @@ api.interceptors.response.use(
 
     const isNetworkError = !error.response;
     const isTimeout =
-      error.code === "ECONNABORTED" || error.code === "ETIMEDOUT";
-    const isServerDown = status !== undefined && status >= 500;
+      error.code === "ECONNABORTED" ||
+      error.code === "ETIMEDOUT" ||
+      error.message?.toLowerCase().includes("timeout");
+    const isServerError = status !== undefined && status >= 500;
 
-    if (isNetworkError || isServerDown) {
+    if (isNetworkError || isServerError) {
       healthService.reportFailure();
-
-      if (isNetworkError) {
-        void healthService.checkNow();
-      }
+      if (isNetworkError) void healthService.checkNow();
     }
 
     if (status === 401 && original && !original._retry && !isAuthRoute) {
+      const hadTokenBefore = !!tokenManagerInstance.getAccessToken();
+
+      if (!hadTokenBefore) {
+        return Promise.reject(
+          new ApiError({
+            status: 401,
+            message: "Autenticação necessária",
+            errors: [],
+            code: "UNAUTHENTICATED",
+          }),
+        );
+      }
+
       original._retry = true;
       try {
         const newToken = await tokenManagerInstance.refreshToken();
@@ -104,7 +125,17 @@ api.interceptors.response.use(
         return api(original);
       } catch {
         tokenManagerInstance.clearSession();
-        if (!location.pathname.startsWith("/login")) location.assign("/login");
+        if (!location.pathname.startsWith("/login")) {
+          location.assign("/login");
+        }
+        return Promise.reject(
+          new ApiError({
+            status: 401,
+            message: "Sessão expirada. Faça login novamente.",
+            errors: [],
+            code: "SESSION_EXPIRED",
+          }),
+        );
       }
     }
 
@@ -121,19 +152,127 @@ api.interceptors.response.use(
       );
     }
 
-    return Promise.reject(
-      new ApiError({
-        status: error.response?.status,
-        message:
-          error.response?.data?.message ??
-          error.response?.data?.errors?.[0]?.message ??
-          "Erro inesperado",
-        errors: error.response?.data?.errors ?? [],
-        code: error.response?.data?.errors?.[0]?.code ?? undefined,
-      }),
-    );
+    return Promise.reject(buildApiError(error, status));
   },
 );
+
+function buildApiError(
+  error: AxiosError<ApiResponseBody & SpringErrorBody>,
+  status: number | undefined,
+): ApiError {
+  const body = error.response?.data;
+  if (body?.errors && Array.isArray(body.errors) && body.errors.length > 0) {
+    return new ApiError({
+      status: status ?? 400,
+      message: body.errors[0].message ?? body.message ?? "Erro na requisição",
+      errors: body.errors,
+      code: body.errors[0].code,
+    });
+  }
+
+  if (body?.message && body?.success === false) {
+    return new ApiError({
+      status: status ?? 400,
+      message: body.message,
+      errors: [],
+      code: undefined,
+    });
+  }
+
+  if (body?.error && typeof body.error === "string") {
+    return new ApiError({
+      status: status ?? 400,
+      message: humanizeSpringError(status, body),
+      errors: [],
+      code: springCodeFromStatus(status),
+    });
+  }
+
+  if (body?.message) {
+    return new ApiError({
+      status: status ?? 400,
+      message: body.message,
+      errors: [],
+      code: undefined,
+    });
+  }
+
+  return new ApiError({
+    status: status ?? 0,
+    message: defaultMessageByStatus(status),
+    errors: [],
+    code: springCodeFromStatus(status),
+  });
+}
+
+function humanizeSpringError(
+  status: number | undefined,
+  body: SpringErrorBody,
+): string {
+  switch (status) {
+    case 400:
+      return "Requisição inválida. Verifique os dados enviados.";
+    case 403:
+      return "Você não tem permissão para acessar este recurso.";
+    case 404:
+      return "Recurso não encontrado.";
+    case 405:
+      return "Método não permitido.";
+    case 415:
+      return "Formato de conteúdo não suportado.";
+    case 429:
+      return "Muitas requisições. Aguarde e tente novamente.";
+    default:
+      return body.message ?? body.error ?? "Erro inesperado";
+  }
+}
+
+function defaultMessageByStatus(status: number | undefined): string {
+  switch (status) {
+    case 400:
+      return "Requisição inválida";
+    case 401:
+      return "Não autenticado";
+    case 403:
+      return "Acesso negado";
+    case 404:
+      return "Recurso não encontrado";
+    case 409:
+      return "Conflito de dados";
+    case 422:
+      return "Dados inválidos";
+    case 429:
+      return "Muitas requisições";
+    case 500:
+      return "Erro interno do servidor";
+    case 502:
+    case 503:
+    case 504:
+      return "Servidor temporariamente indisponível";
+    default:
+      return "Erro inesperado";
+  }
+}
+
+function springCodeFromStatus(status: number | undefined): string | undefined {
+  switch (status) {
+    case 400:
+      return "VALIDATION_ERROR";
+    case 401:
+      return "UNAUTHENTICATED";
+    case 403:
+      return "FORBIDDEN";
+    case 404:
+      return "NOT_FOUND";
+    case 500:
+    case 502:
+    case 503:
+    case 504:
+      return "SERVER_ERROR";
+    default:
+      return undefined;
+  }
+}
 
 export type ApiInstance = AxiosInstance;
 export const authRepository = new AuthRepository(api);

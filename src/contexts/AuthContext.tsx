@@ -35,7 +35,9 @@ export interface AuthContextValue {
 export const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<RawUser | null>(null);
+  const [user, setUser] = useState<RawUser | null>(
+    tokenManagerInstance.getUser(),
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   const sync = useCallback(() => setUser(tokenManagerInstance.getUser()), []);
@@ -77,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new ApiError({
           status: 500,
           message: "Resposta inválida do servidor ao registrar",
+          errors: [],
         });
       }
 

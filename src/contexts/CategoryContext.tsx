@@ -12,6 +12,7 @@ import type { Category } from "@/models/Category";
 import { categoryRepository } from "@/services/api";
 import { ApiError } from "@/services/api-error";
 import type { CategoryRequest } from "@/types/api";
+import { useAuth } from "@/hooks/useAuth";
 
 const MAX_CATEGORIES = 20;
 const byName = (a: Category, b: Category) =>
@@ -40,6 +41,7 @@ export interface CategoryContextValue {
 export const CategoryContext = createContext<CategoryContextValue | null>(null);
 
 export function CategoryProvider({ children }: { children: ReactNode }) {
+  const { isAuthenticated } = useAuth();
   const [state, setState] = useState<CategoryState>({
     items: [],
     loading: true,
@@ -60,6 +62,13 @@ export function CategoryProvider({ children }: { children: ReactNode }) {
           ? err.firstErrorMessage()
           : "Erro ao carregar categorias";
       setState((s) => ({ ...s, loading: false, error: message }));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setState((prev) => ({ ...prev, items: [], loading: false }));
+      return;
     }
   }, []);
 

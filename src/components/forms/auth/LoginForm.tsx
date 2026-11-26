@@ -8,8 +8,9 @@ import { Alert } from "@/components/ui/Alert";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { GoogleButton } from "@/components/ui/GoogleButton";
-import { Link, Lock, Mail } from "lucide-react";
+import { Lock, Mail } from "lucide-react";
 import { useApiStatus } from "@/hooks/useApiStatus";
+import { Link } from "react-router-dom";
 
 export function LoginForm() {
   const { login } = useAuth();

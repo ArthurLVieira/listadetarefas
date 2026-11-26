@@ -1,5 +1,18 @@
 import { Entity, type RawEntity } from "./base/Entity";
 import type { Category } from "./Category";
+import type { PriorityName } from "./Priority";
+
+export interface TaskPriority {
+  id: number;
+  name: PriorityName;
+  color: string;
+}
+
+export interface TaskCategory {
+  id: number;
+  name: string;
+  color: string | null;
+}
 
 export interface RawTask extends RawEntity {
   title: string;

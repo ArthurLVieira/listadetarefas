@@ -1,4 +1,4 @@
-import { ListTodo, Tag, type LucideIcon } from "lucide-react";
+import { Home, ListTodo, Tag, type LucideIcon } from "lucide-react";
 
 export interface PageInfo {
   title: string;
@@ -7,7 +7,15 @@ export interface PageInfo {
 }
 
 export function getPageInfo(pathname: string): PageInfo {
-  if (pathname === "/" || pathname.startsWith("/tasks")) {
+  if (pathname === "/") {
+    return {
+      title: "Início",
+      subtitle: "Visão geral do seu dia",
+      icon: Home,
+    };
+  }
+
+  if (pathname.startsWith("/tasks")) {
     return {
       title: "Tarefas",
       subtitle: "Organizar o que precisa ser feito",

@@ -4,20 +4,26 @@ export type ApiErrorCode =
   | "API_OFFLINE"
   | "NETWORK_ERROR"
   | "TIMEOUT"
+  | "UNAUTHENTICATED"
+  | "SESSION_EXPIRED"
+  | "FORBIDDEN"
+  | "NOT_FOUND"
+  | "VALIDATION_ERROR"
+  | "SERVER_ERROR"
   | "INVALID_CREDENTIALS"
   | string;
 
 export interface RawApiError {
-  status?: number;
+  status: number;
   message: string;
-  errors?: ApiErrorResponse[];
+  errors: ApiErrorResponse[];
   code?: ApiErrorCode;
 }
 
 export class ApiError extends Error {
-  readonly status?: number;
+  readonly status: number;
   readonly message: string;
-  readonly errors?: ApiErrorResponse[];
+  readonly errors: ApiErrorResponse[];
   readonly code?: ApiErrorCode;
 
   constructor(raw: RawApiError) {
@@ -29,23 +35,8 @@ export class ApiError extends Error {
     this.name = "ApiError";
   }
 
-  get getStatus(): number | undefined {
-    return this.status;
-  }
-
-  get getErrors(): ApiErrorResponse[] | undefined {
-    return this.errors;
-  }
-
-  get getCode(): string | undefined {
-    return this.code;
-  }
-
-  firstErrorMessage(): string | null {
-    if (this.errors && this.errors.length > 0) {
-      return this.errors[0].message;
-    }
-    return null;
+  firstErrorMessage(): string {
+    return this.errors[0]?.message ?? this.message;
   }
 
   isOffline(): boolean {
@@ -54,5 +45,21 @@ export class ApiError extends Error {
 
   isTimeout(): boolean {
     return this.code === "TIMEOUT";
+  }
+
+  isAuth(): boolean {
+    return this.status === 401 || this.code === "UNAUTHENTICATED";
+  }
+
+  isForbidden(): boolean {
+    return this.status === 403;
+  }
+
+  isValidation(): boolean {
+    return this.status === 400 && this.errors.length > 0;
+  }
+
+  isServer(): boolean {
+    return this.status >= 500;
   }
 }
