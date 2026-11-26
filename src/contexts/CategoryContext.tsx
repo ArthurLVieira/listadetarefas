@@ -117,7 +117,6 @@ export function CategoryProvider({ children }: { children: ReactNode }) {
       const updated = await categoryRepository.update(id, payload);
       setState((s) => ({
         ...s,
-        // ✅ `updated` (entidade), não `update` (função)
         items: s.items.map((c) => (c.id === id ? updated : c)).sort(byName),
       }));
       return updated;
@@ -127,7 +126,6 @@ export function CategoryProvider({ children }: { children: ReactNode }) {
 
   const remove = useCallback(async (id: number): Promise<void> => {
     const snapshot = itemsRef.current;
-    // otimista
     setState((s) => ({ ...s, items: s.items.filter((c) => c.id !== id) }));
     try {
       await categoryRepository.remove(id);

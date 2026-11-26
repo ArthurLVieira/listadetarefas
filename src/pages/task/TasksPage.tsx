@@ -243,7 +243,6 @@ export function TasksPage() {
         </div>
       )}
 
-      {/* Sheets */}
       <TaskFormSheet
         open={formOpen}
         initial={editing}
@@ -270,7 +269,6 @@ export function TasksPage() {
         onConfirm={confirmDelete}
       />
 
-      {/* Toast — feedback de toggle */}
       {toast && (
         <div
           role="status"
