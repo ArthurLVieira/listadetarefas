@@ -1,4 +1,5 @@
 // src/pages/HomePage.tsx
+// src/pages/HomePage.tsx
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -16,6 +17,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import type { TaskFormData } from "@/schemas/task.schema";
+import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/hooks/useAuth";
 import { useTask } from "@/hooks/useTask";
 import { useCategory } from "@/hooks/useCategories";

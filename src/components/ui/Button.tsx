@@ -4,11 +4,17 @@ import { Loader2 } from "lucide-react";
 
 type Variant = "primary" | "secondary" | "outline" | "ghost" | "google";
 type Size = "sm" | "md" | "lg";
+type Variant = "primary" | "secondary" | "outline" | "ghost" | "google";
+type Size = "sm" | "md" | "lg";
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   size?: Size;
+  size?: Size;
   loading?: boolean;
+  fullWidth?: boolean;
+  iconLeft?: React.ReactNode;
+  iconRight?: React.ReactNode;
   fullWidth?: boolean;
   iconLeft?: React.ReactNode;
   iconRight?: React.ReactNode;
@@ -33,11 +39,25 @@ const variants: Record<Variant, string> = {
   primary:
     "bg-gradient-to-r from-accent-500 to-accent-600 text-white " +
     "shadow-lg shadow-accent-500/25 " +
+  primary:
+    "bg-gradient-to-r from-accent-500 to-accent-600 text-white " +
+    "shadow-lg shadow-accent-500/25 " +
     "hover:from-accent-600 hover:to-accent-700 focus-visible:ring-accent-400",
   secondary:
     "bg-gradient-to-r from-primary-500 to-primary-600 text-white " +
     "shadow-lg shadow-primary-500/25 hover:from-primary-600 hover:to-primary-700 " +
+  secondary:
+    "bg-gradient-to-r from-primary-500 to-primary-600 text-white " +
+    "shadow-lg shadow-primary-500/25 hover:from-primary-600 hover:to-primary-700 " +
     "focus-visible:ring-primary-400",
+  outline:
+    "border border-neutral-200 bg-white text-neutral-800 " +
+    "hover:bg-neutral-50 active:bg-neutral-100 focus-visible:ring-primary-400",
+  ghost:
+    "text-neutral-600 hover:bg-neutral-100 active:bg-neutral-200 focus-visible:ring-neutral-300",
+  google:
+    "border border-neutral-200 bg-white text-neutral-800 " +
+    "hover:bg-neutral-50 active:bg-neutral-100 focus-visible:ring-primary-400",
   outline:
     "border border-neutral-200 bg-white text-neutral-800 " +
     "hover:bg-neutral-50 active:bg-neutral-100 focus-visible:ring-primary-400",
@@ -54,7 +74,11 @@ export const Button = forwardRef<HTMLButtonElement, Props>(
       className,
       variant = "primary",
       size = "md",
+      size = "md",
       loading,
+      fullWidth,
+      iconLeft,
+      iconRight,
       fullWidth,
       iconLeft,
       iconRight,
@@ -70,14 +94,18 @@ export const Button = forwardRef<HTMLButtonElement, Props>(
       className={clsx(
         base,
         sizes[size],
+        sizes[size],
         variants[variant],
+        fullWidth && "w-full",
         fullWidth && "w-full",
         className,
       )}
       {...rest}
     >
       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : iconLeft}
+      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : iconLeft}
       {children}
+      {!loading && iconRight}
       {!loading && iconRight}
     </button>
   ),

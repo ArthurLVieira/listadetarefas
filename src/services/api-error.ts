@@ -1,5 +1,12 @@
 import type { ApiErrorResponse } from "../types/api";
 
+type apiErrorCode =
+  | "API_OFFLINE"
+  | "NETWORK_ERROR"
+  | "TIMEOUT"
+  | "INVALID_CREDENTIALS"
+  | string;
+
 export type ApiErrorCode =
   | "API_OFFLINE"
   | "NETWORK_ERROR"
@@ -43,12 +50,8 @@ export class ApiError extends Error {
     return this.code === "API_OFFLINE" || this.code === "NETWORK_ERROR";
   }
 
-  isTimeout(): boolean {
-    return this.code === "TIMEOUT";
-  }
-
-  isAuth(): boolean {
-    return this.status === 401 || this.code === "UNAUTHENTICATED";
+  get getCode(): number | undefined {
+    return this.code;
   }
 
   isForbidden(): boolean {
@@ -61,5 +64,9 @@ export class ApiError extends Error {
 
   isServer(): boolean {
     return this.status >= 500;
+  }
+
+  isOffline(): boolean {
+    return this.code === "API_OFFLINE" || this.code === "NETWORK_ERROR";
   }
 }

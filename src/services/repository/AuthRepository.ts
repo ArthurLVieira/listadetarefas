@@ -19,7 +19,7 @@ export class AuthRepository extends BaseRepository {
 
   public async register(
     payload: RegisterRequest,
-  ): Promise<AuthResponse | null> {
+  ): Promise<AuthResponse> {
     const data = await this.post<AuthResponse>("/register", payload);
     return data;
   }

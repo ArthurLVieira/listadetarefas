@@ -28,7 +28,7 @@ export interface AuthContextValue {
   login: (data: LoginRequest, remember?: boolean) => Promise<void>;
   register: (data: RegisterRequest, remember?: boolean) => Promise<void>;
   loginWithGoogle: (remember?: boolean) => void;
-  completeOAuth2Login: (Params: OAuth2CallBackParams) => boolean;
+  completeOAuuth2Login: (Params: OAuth2CallBackParams) => boolean;
   logout: () => Promise<void>;
 }
 
@@ -73,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = useCallback(
     async (data: RegisterRequest, remember = true) => {
-      const response = await authRepository.login(data);
+      const response = await authRepository.register(data);
 
       if (!response) {
         throw new ApiError({
@@ -93,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     authRepository.startGoogleLogin();
   }, []);
 
-  const completeOAuth2Login = useCallback(
+  const completeOAuuth2Login = useCallback(
     (params: OAuth2CallBackParams) => {
       const remember = sessionStorage.getItem(OAUTH2_REMEMBER_KEY) !== "false";
       sessionStorage.removeItem(OAUTH2_REMEMBER_KEY);
@@ -136,7 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login,
       register,
       loginWithGoogle,
-      completeOAuth2Login,
+      completeOAuuth2Login,
       logout,
     }),
     [

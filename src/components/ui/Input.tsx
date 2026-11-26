@@ -1,6 +1,12 @@
 import clsx from "clsx";
-import { forwardRef, useId, type InputHTMLAttributes } from "react";
+import {
+  forwardRef, useId,
+  useId,
+  type InputHTMLAttributes,
+  type ReactNode,
+} from "react";
 
+interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
   label: string;
   error?: string;
