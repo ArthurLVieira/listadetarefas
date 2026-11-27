@@ -1,78 +1,49 @@
-# React + TypeScript + Vite
+# Lista de Tarefas
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação web em React, TypeScript e Vite para consumir a API de tarefas.
 
-Currently, two official plugins are available:
+## Desenvolvimento local
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Instale as dependências e inicie o servidor:
 
-## React Compiler
-
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
-
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```sh
+npm ci
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+O arquivo `.env` aponta para a API hospedada. Para usar uma API local ou
+substituir os endereços sem alterar arquivos versionados, crie `.env.local`:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```dotenv
+VITE_API_URL=http://localhost:8080/api
+VITE_OAUTH2_URL=http://localhost:8080/oauth2/authorization/google
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Build e deploy
 
+O build de produção usa os endereços definidos em `.env`:
+
+- API: `https://apilistadetarefas.onrender.com/api`
+- Login Google: `https://apilistadetarefas.onrender.com/oauth2/authorization/google`
+
+Em uma hospedagem estática, use:
+
+- **Build command:** `npm ci && npm run build`
+- **Publish directory:** `dist`
+- **SPA fallback/rewrite:** encaminhe rotas não encontradas para `/index.html`
+
+As variáveis podem ser sobrescritas na configuração do provedor:
+`VITE_API_URL` deve incluir o prefixo `/api`; `VITE_OAUTH2_URL` deve apontar
+para o endpoint de autorização OAuth2. Variáveis `VITE_*` são incluídas no
+bundle do navegador e não devem conter segredos.
+
+O servidor da API também precisa permitir a origem do frontend na configuração
+de CORS e ter o callback OAuth do Google configurado para o domínio público da
+API.
+
+## Validação
+
+```sh
+npm run build
+npm run lint
 ```
