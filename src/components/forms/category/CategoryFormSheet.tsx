@@ -25,7 +25,6 @@ export function CategoryFormSheet({ open, initial, onClose, onSubmit }: Props) {
   const isEditing = !!initial;
 
   const {
-    register,
     handleSubmit,
     control,
     reset,
@@ -33,6 +32,8 @@ export function CategoryFormSheet({ open, initial, onClose, onSubmit }: Props) {
   } = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
     defaultValues: { name: "", description: "", color: null },
+    shouldUnregister: false,
+    mode: "onSubmit",
   });
 
   useEffect(() => {
@@ -86,19 +87,40 @@ export function CategoryFormSheet({ open, initial, onClose, onSubmit }: Props) {
       >
         {formError && <Alert message={formError} />}
 
-        <Input
-          label="Nome"
-          placeholder="Ex.: Trabalho, Pessoal, Estudos..."
-          autoFocus
-          error={errors.name?.message}
-          {...register("name")}
+        <Controller
+          control={control}
+          name="name"
+          render={({ field }) => (
+            <Input
+              label="Nome"
+              placeholder="Ex.: Trabalho, Pessoal, Estudos..."
+              autoFocus
+              maxLength={50}
+              error={errors.name?.message}
+              name={field.name}
+              value={field.value ?? ""}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              ref={field.ref}
+            />
+          )}
         />
 
-        <Input
-          label="Observação"
-          placeholder="Digite aqui..."
-          error={errors.description?.message}
-          {...register("description")}
+        <Controller
+          control={control}
+          name="description"
+          render={({ field }) => (
+            <Input
+              label="Observação"
+              placeholder="Digite aqui..."
+              error={errors.description?.message}
+              name={field.name}
+              value={field.value ?? ""}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              ref={field.ref}
+            />
+          )}
         />
 
         <div className="space-y-1.5">
