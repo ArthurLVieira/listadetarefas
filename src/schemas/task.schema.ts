@@ -10,8 +10,7 @@ export const taskSchema = z.object({
     .string()
     .trim()
     .max(5000, "Descrição muito longa")
-    .optional()
-    .transform((v) => (v ? v : undefined)),
+    .optional(),
   dueDate: z.string().optional(),
   priorityId: z.number().int().positive(),
   categoryId: z.number().int().positive().nullable(),

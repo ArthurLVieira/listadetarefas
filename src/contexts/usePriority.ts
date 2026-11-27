@@ -41,7 +41,7 @@ export function usePriority() {
       inFlitht = null;
       if (mountedRef.current) setLoading(false);
     }
-  });
+  }, []);
 
   useEffect(() => {
     mountedRef.current = true;

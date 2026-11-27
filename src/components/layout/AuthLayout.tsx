@@ -1,4 +1,3 @@
-import { useApiStatus } from "@/hooks/useApiStatus";
 import { Sparkles } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -9,8 +8,6 @@ interface Props {
 }
 
 export function AuthLayout({ title, subtitle, children }: Props) {
-  const { isOffline } = useApiStatus();
-
   return (
     <div className="relative min-h-[100dvh] flex bg-gradient-to-br from-primary-700 via-secondary-700 to-primary-900 overflow-hidden">
       <div

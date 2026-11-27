@@ -102,7 +102,9 @@ export function TaskProvider({ children }: { children: ReactNode }) {
       const snapshot = itemsRef.current;
       setItems((prev) =>
         prev
-          .map((t) => (t.id === id ? { ...t, completed } : t))
+          .map((t) =>
+            t.id === id ? Task.fromRaw({ ...t, completed }) : t,
+          )
           .sort(byPosition),
       );
       try {

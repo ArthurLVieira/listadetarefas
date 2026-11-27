@@ -40,8 +40,6 @@ export function TaskFormSheet({
     handleSubmit,
     control,
     reset,
-    setValue,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
@@ -78,7 +76,8 @@ export function TaskFormSheet({
       await onSubmit({
         ...data,
         description: data.description ?? undefined,
-        dueDate: fromLocalInput(data.dueDate ?? ""),
+        dueDate:
+          data.dueDate ? (fromLocalInput(data.dueDate) ?? undefined) : undefined,
       });
       onClose();
     } catch (err) {
@@ -198,14 +197,6 @@ export function TaskFormSheet({
             )}
           />
         </div>
-
-        {/* placeholders inúteis para evitar warning de variável não usada */}
-        <input
-          type="hidden"
-          {...register("dueDate")}
-          value={watch("dueDate") ?? ""}
-          onChange={() => {}}
-        />
       </form>
     </Sheet>
   );
