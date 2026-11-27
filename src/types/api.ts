@@ -54,6 +54,6 @@ export interface TaskCreateRequest {
   categoryId?: number | null;
 }
 
-export interface TaskUpdateRequest extends TaskCreateRequest {}
+export type TaskUpdateRequest = TaskCreateRequest;
 
 export type TaskFilter = "all" | "open" | "completed";

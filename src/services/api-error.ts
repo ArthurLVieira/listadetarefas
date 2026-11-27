@@ -39,7 +39,7 @@ export class ApiError extends Error {
     return this.errors[0]?.message ?? this.message;
   }
 
-  get getCode(): number | undefined {
+  get getCode(): ApiErrorCode | undefined {
     return this.code;
   }
 

@@ -41,12 +41,13 @@ export function usePriority() {
       inFlitht = null;
       if (mountedRef.current) setLoading(false);
     }
-  });
+  }, []);
 
   useEffect(() => {
     mountedRef.current = true;
     void fetchPriorities();
     return () => {
+      mountedRef.current = false;
       mountedRef.current = false;
     };
   }, [fetchPriorities]);
