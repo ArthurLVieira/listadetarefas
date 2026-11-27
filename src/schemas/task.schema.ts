@@ -6,11 +6,7 @@ export const taskSchema = z.object({
     .trim()
     .min(1, "Título é obrigatório")
     .max(200, "Título deve ter no máximo 200 caracteres"),
-  description: z
-    .string()
-    .trim()
-    .max(5000, "Descrição muito longa")
-    .optional(),
+  description: z.string().trim().max(5000, "Descrição muito longa").optional(),
   dueDate: z.string().optional(),
   priorityId: z.number().int().positive(),
   categoryId: z.number().int().positive().nullable(),
