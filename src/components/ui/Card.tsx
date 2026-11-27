@@ -36,19 +36,3 @@ export const GlassCard = ({
     {...rest}
   />
 );
-
-export const GlassCard = ({
-  className,
-  ...rest
-}: HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={clsx(
-      "relative rounded-3xl overflow-hidden",
-      "bg-white/[0.97] backdrop-blur-xl ring-1 ring-white/20",
-      "shadow-[0_20px_60px_-20px_rgba(0,0,0,0.35)]",
-      "p-5 sm:p-7 md:p-8",
-      className,
-    )}
-    {...rest}
-  />
-);

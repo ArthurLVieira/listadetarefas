@@ -1,4 +1,3 @@
-// src/schemas/task.schema.ts
 import { z } from "zod";
 
 export const taskSchema = z.object({
@@ -13,7 +12,6 @@ export const taskSchema = z.object({
     .max(5000, "Descrição muito longa")
     .optional()
     .transform((v) => (v ? v : undefined)),
-  /** Formato do input datetime-local: "YYYY-MM-DDTHH:mm" ou "" */
   dueDate: z.string().optional(),
   priorityId: z.number().int().positive(),
   categoryId: z.number().int().positive().nullable(),

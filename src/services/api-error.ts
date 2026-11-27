@@ -1,12 +1,5 @@
 import type { ApiErrorResponse } from "../types/api";
 
-type apiErrorCode =
-  | "API_OFFLINE"
-  | "NETWORK_ERROR"
-  | "TIMEOUT"
-  | "INVALID_CREDENTIALS"
-  | string;
-
 export type ApiErrorCode =
   | "API_OFFLINE"
   | "NETWORK_ERROR"
@@ -44,10 +37,6 @@ export class ApiError extends Error {
 
   firstErrorMessage(): string {
     return this.errors[0]?.message ?? this.message;
-  }
-
-  isOffline(): boolean {
-    return this.code === "API_OFFLINE" || this.code === "NETWORK_ERROR";
   }
 
   get getCode(): number | undefined {
