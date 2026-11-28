@@ -1,7 +1,8 @@
 import { UserProfileSheet } from "@/components/forms/profile/UserProfileSheet";
+import { ChangePasswordSheet } from "@/components/forms/profile/ChangePasswordSheet";
 import { useAuth } from "@/hooks/useAuth";
 import clsx from "clsx";
-import { ChevronDown, LogOut, Pencil } from "lucide-react";
+import { ChevronDown, KeyRound, LogOut, Pencil } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -10,6 +11,7 @@ export function UserMenu() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [passwordOpen, setPasswordOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -117,6 +119,23 @@ export function UserMenu() {
           <button
             type="button"
             role="menuitem"
+            onClick={() => {
+              setOpen(false);
+              setPasswordOpen(true);
+            }}
+            className={clsx(
+              "w-full flex items-center gap-2 px-3 py-2 rounded-xl",
+              "text-sm text-neutral-700 hover:bg-neutral-100 active:bg-neutral-200",
+              "transition-colors",
+            )}
+          >
+            <KeyRound className="h-4 w-4" />
+            Alterar senha
+          </button>
+
+          <button
+            type="button"
+            role="menuitem"
             onClick={handleLogout}
             className={clsx(
               "w-full flex items-center gap-2 px-3 py-2 rounded-xl",
@@ -131,6 +150,9 @@ export function UserMenu() {
       )}
       {profileOpen && (
         <UserProfileSheet onClose={() => setProfileOpen(false)} />
+      )}
+      {passwordOpen && (
+        <ChangePasswordSheet onClose={() => setPasswordOpen(false)} />
       )}
     </div>
   );
