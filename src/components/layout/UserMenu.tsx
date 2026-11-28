@@ -1,6 +1,7 @@
+import { UserProfileSheet } from "@/components/forms/profile/UserProfileSheet";
 import { useAuth } from "@/hooks/useAuth";
 import clsx from "clsx";
-import { ChevronDown, LogOut } from "lucide-react";
+import { ChevronDown, LogOut, Pencil } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -8,6 +9,7 @@ export function UserMenu() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -98,6 +100,23 @@ export function UserMenu() {
           <button
             type="button"
             role="menuitem"
+            onClick={() => {
+              setOpen(false);
+              setProfileOpen(true);
+            }}
+            className={clsx(
+              "w-full flex items-center gap-2 px-3 py-2 rounded-xl",
+              "text-sm text-neutral-700 hover:bg-neutral-100 active:bg-neutral-200",
+              "transition-colors",
+            )}
+          >
+            <Pencil className="h-4 w-4" />
+            Editar usuário
+          </button>
+
+          <button
+            type="button"
+            role="menuitem"
             onClick={handleLogout}
             className={clsx(
               "w-full flex items-center gap-2 px-3 py-2 rounded-xl",
@@ -109,6 +128,9 @@ export function UserMenu() {
             Sair
           </button>
         </div>
+      )}
+      {profileOpen && (
+        <UserProfileSheet onClose={() => setProfileOpen(false)} />
       )}
     </div>
   );

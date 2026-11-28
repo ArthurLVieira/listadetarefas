@@ -46,12 +46,21 @@ class tokenManager {
       return;
     }
 
-    const user = this.decodeUserFromToken(accessToken);
+    const tokenUser = this.decodeUserFromToken(accessToken);
 
-    if (!user || expiresAt <= Date.now()) {
+    if (!tokenUser || expiresAt <= Date.now()) {
       this.clearSession();
       return;
     }
+
+    const storedUser = Storage.get<RawUser>(USER_KEY);
+    const user =
+      storedUser?.id === tokenUser.id &&
+      storedUser.email === tokenUser.email &&
+      typeof storedUser.name === "string" &&
+      storedUser.name.trim().length > 0
+        ? { ...tokenUser, name: storedUser.name }
+        : tokenUser;
 
     this.state = { accessToken, refreshToken, expiresAt, user };
     this.scheduleRefresh();
@@ -97,6 +106,13 @@ class tokenManager {
 
   getUser(): RawUser | null {
     return this.state?.user ?? null;
+  }
+
+  updateUser(user: RawUser): void {
+    if (!this.state) throw new Error("Não há uma sessão autenticada");
+
+    this.state = { ...this.state, user };
+    Storage.set(USER_KEY, user);
   }
 
   isAuthenticated(): boolean {

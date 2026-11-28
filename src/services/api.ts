@@ -11,6 +11,7 @@ import { CategoryRepository } from "./repository/CategoryRepository";
 import { healthService } from "./health/HealthService";
 import { PriorityRepository } from "./repository/PriorityRepository";
 import { TaskRepository } from "./repository/TaskRepository";
+import { UserRepository } from "./repository/UserRepository";
 
 export const api = axios.create({
   baseURL: env.apiUrl,
@@ -279,3 +280,4 @@ export const authRepository = new AuthRepository(api);
 export const categoryRepository = new CategoryRepository(api);
 export const priorityRepository = new PriorityRepository(api);
 export const taskRepository = new TaskRepository(api);
+export const userRepository = new UserRepository(api);
