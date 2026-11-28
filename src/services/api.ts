@@ -99,6 +99,10 @@ api.interceptors.response.use(
       error.message?.toLowerCase().includes("timeout");
     const isServerError = status !== undefined && status >= 500;
 
+    if (status !== undefined && status < 500) {
+      healthService.reportSuccess();
+    }
+
     if (isNetworkError || isServerError) {
       healthService.reportFailure();
       if (isNetworkError) void healthService.checkNow();

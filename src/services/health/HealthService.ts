@@ -1,5 +1,6 @@
 import axios from "axios";
 import { env } from "@/config/env";
+import { tokenManagerInstance } from "@/services/auth/tokenManager";
 
 export type ApiStatus = "online" | "offline" | "checking" | "unknown";
 export type HealthListener = (status: ApiStatus) => void;
@@ -13,7 +14,7 @@ interface Options {
 }
 
 const DEFAULTS: Options = {
-  healthPath: "/actuator/health",
+  healthPath: "/categories",
   onlinePollIntervalMs: 30_000,
   offlinePollIntervalMs: 5_000,
   pingTimeoutMs: 4_000,
@@ -93,16 +94,39 @@ class HealthService {
   }
 
   private async doCheck(): Promise<ApiStatus> {
+    const accessToken = tokenManagerInstance.getAccessToken();
+
+    if (!accessToken) {
+      if (this.status === "checking") this.setStatus("unknown");
+      this.scheduleNext();
+      return this.status;
+    }
+
     this.setStatus("checking");
 
     try {
-      await axios.get(`${env.hostUrl}${this.opts.healthPath}`, {
+      const token = tokenManagerInstance.isExpiringSoon()
+        ? await tokenManagerInstance.refreshToken()
+        : accessToken;
+
+      await axios.get(this.opts.healthPath, {
+        baseURL: env.apiUrl,
+        headers: { Authorization: `Bearer ${token}` },
         timeout: this.opts.pingTimeoutMs,
       });
       this.consecutiveFailures = 0;
       this.setStatus("online");
-    } catch {
-      this.setStatus("offline");
+    } catch (error: unknown) {
+      if (
+        axios.isAxiosError(error) &&
+        error.response !== undefined &&
+        error.response.status < 500
+      ) {
+        this.consecutiveFailures = 0;
+        this.setStatus("online");
+      } else {
+        this.setStatus("offline");
+      }
     } finally {
       this.scheduleNext();
     }
@@ -115,9 +139,9 @@ class HealthService {
     if (!this.started) return;
 
     const interval =
-      this.status === "online"
-        ? this.opts.onlinePollIntervalMs
-        : this.opts.offlinePollIntervalMs;
+      this.status === "offline"
+        ? this.opts.offlinePollIntervalMs
+        : this.opts.onlinePollIntervalMs;
 
     this.pollTimer = setTimeout(() => void this.check(), interval);
   }
