@@ -25,6 +25,7 @@ export interface AuthContextValue {
   user: RawUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  updateUser: (user: RawUser) => void;
   login: (data: LoginRequest, remember?: boolean) => Promise<void>;
   register: (data: RegisterRequest, remember?: boolean) => Promise<void>;
   loginWithGoogle: (remember?: boolean) => void;
@@ -41,6 +42,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const sync = useCallback(() => setUser(tokenManagerInstance.getUser()), []);
+  const updateUser = useCallback((updatedUser: RawUser) => {
+    tokenManagerInstance.updateUser(updatedUser);
+    setUser(updatedUser);
+  }, []);
 
   useEffect(() => {
     tokenManagerInstance.hydrate();
@@ -133,6 +138,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       isAuthenticated: user !== null,
       isLoading,
+      updateUser,
       login,
       register,
       loginWithGoogle,
@@ -142,6 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [
       user,
       isLoading,
+      updateUser,
       login,
       register,
       loginWithGoogle,
