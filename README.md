@@ -11,8 +11,8 @@ npm ci
 npm run dev
 ```
 
-O arquivo `.env` aponta para a API hospedada. Para usar uma API local ou
-substituir os endereços sem alterar arquivos versionados, crie `.env.local`:
+O arquivo `.env` aponta para a API local em `http://localhost:8080`. Para usar
+outra API sem alterar arquivos versionados, crie `.env.local`:
 
 ```dotenv
 VITE_API_URL=http://localhost:8080/api
@@ -21,7 +21,8 @@ VITE_OAUTH2_URL=http://localhost:8080/oauth2/authorization/google
 
 ## Build e deploy
 
-O build de produção usa os endereços definidos em `.env`:
+Configure as variáveis no provedor de hospedagem para apontar para a API de
+produção:
 
 - API: `https://apilistadetarefas.onrender.com/api`
 - Login Google: `https://apilistadetarefas.onrender.com/oauth2/authorization/google`
